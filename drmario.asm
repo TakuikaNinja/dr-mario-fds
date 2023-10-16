@@ -24,7 +24,8 @@ include header/drmario_header_fds.asm
 	
 	.db FileDataBlock
 	chr_start:
-	incbin bin/dr_mario_chr_001.chr ;just get the title screen tiles for now
+	incbin bin/drmario_chr_02.chr
+	incbin bin/drmario_chr_03.chr
 	chr_end:
 
 ; PRG
