@@ -1,8 +1,11 @@
 ;Non-zero page RAM ($0100 to $07FF)
 
 ;Stack RAM ($0100 to $01FF)
-stack                           = $0100     ;256 bytes
-
+NMI_FLAG                        = $0100 ; (bits 6 & 7)
+IRQ_FLAG                        = $0101 ; (bits 6 & 7)
+RST_FLAG                        = $0102 ; $35 = skip BIOS
+RST_TYPE                        = $0103 ; $ac = first boot, $53 = soft-reset
+	
 ;Sprites RAM ($0200 to $02FF)
 sprites                         = $0200
 

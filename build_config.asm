@@ -1,7 +1,7 @@
 ;Build config
-completeCleanup     = 1         ;Set to 1 to set all build config options
+completeCleanup     = 0         ;Set to 1 to set all build config options
 
-bypassChecksum      = 0         ;Set to 1 to bypass the anti-piracy checksum
+bypassChecksum      = 1         ;Set to 1 to bypass the anti-piracy checksum
 removeUnused        = 0         ;Set to 1 to remove most unused data/code (relatively safe)
 removeMoreUnused    = 0         ;Set to 1 to remove the assumed remaining unused data/code (could be risky)
 optimize            = 0         ;Set to 1 to optimize code (frees-up space, but might impact cycle accuracy)

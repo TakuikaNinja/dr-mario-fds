@@ -2,6 +2,8 @@ _docs/
 _original/
 .vscode/
 *.nes
+*.fds
+*.lst
 *.mlb
 compile_debug.bat
 checksum.py

@@ -1,16 +1,4 @@
 ;;
-;; toInit [$8000]
-;;
-;; This routine is called by the reset handler, and simply jumps to the game init routine 
-;; 
-toInit:
-    if !removeMoreUnused
-        ldx #$00                        ;The value stored in x is never used. Seems to be used by unused MMC1 config routine (ldx has its bit 7 set, so writing this value would clear the shift register)           
-    endif 
-        jmp init          
-
-
-;;
 ;; nmi [$8005]
 ;;
 ;; The nmi handler, renders graphics, increases the frame counter and gets players (or demo) inputs
@@ -29,15 +17,10 @@ nmi:
         jsr render_palChange_or_bkgOverlays         
         jsr render_fieldRow_bothPlayers
         jsr render_cutscene_txt      
-        lda frameCounter                ;Increase the frame counter         
-        clc                      
-        adc #$01                 
-        sta frameCounter         
-        lda #$00                        ;There is no background scrolling, so x and y both stay at 0                 
-        sta PPUSCROLL       
-        sta PPUSCROLL       
+        inc frameCounter
+        jsr setPPUSCROLL_and_PPUCTRL     
         lda #$01                        ;Sets the nmiFlag to indicate a nmi just occured
-        sta nmiFlag             
+        sta nmiFlag
         jsr getInputs_checkMode         ;Gets either players inputs, or demo inputs, depending on the current mode
         lda #$00                        ;Now that we have rendered the sprites, reset the sprite pointer
         sta spritePointer
@@ -64,7 +47,7 @@ irq:
 ;;
 ;; Local variables:
 currentLetter = tmp47
-init: 
+init:
         lda p1_level                ;Saves option menu settings             
         sta p1_level_tmp        
         lda p2_level             
@@ -176,14 +159,14 @@ init:
         jsr initAPU_status
         jsr initAPU_variablesAndChannels   
     endif 
-        lda #$C0                    ;*NOTE: Don't know what both these addresses are for, maybe some fallback in case of overflow?
-        sta stack+0              
+        lda #$C0                    ;set up flags in stack for controlling NMI, IRQ, and RESET
+        sta NMI_FLAG              
         lda #$80                 
-        sta stack+1              
+        sta IRQ_FLAG              
         lda #$35                        
-        sta stack+3              
+        sta RST_FLAG             
         lda #$AC                 
-        sta stack+4              
+        sta RST_TYPE             
         jsr audioUpdate_NMI_disableRendering
         jsr NMI_off           
         lda #>nametable0            ;Clears all 4 nametables

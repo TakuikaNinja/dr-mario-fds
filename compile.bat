@@ -1,6 +1,6 @@
 @echo.
 @echo Compiling...
-asm6f drmario.asm drmario.nes
+asm6f drmario.asm drmario.fds
 @IF ERRORLEVEL 1 GOTO failure
 @echo.
 @echo.
