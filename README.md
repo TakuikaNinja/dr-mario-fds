@@ -2,7 +2,7 @@
 
 https://github.com/TakuikaNinja/dr-mario-fds
 
-This is a port of Dr. Mario for the Famicom Disk System.
+This is a proof-of-concept port of Dr. Mario for the Famicom Disk System.
 It abuses the fact that most of the variables and routines originate from the [FDS BIOS](https://www.nesdev.org/wiki/FDS_BIOS).
 See [Tetris](https://github.com/TakuikaNinja/TetrisFDS) for another game ported in this manner.
 
