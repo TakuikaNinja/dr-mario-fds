@@ -17,7 +17,7 @@ The differences from the original game are as follows:
    - This was unfortunately necessary as code after the title screen data is also checked.
 
 Possibilities opened up by this port (but no immediate plans to implement them):
-- Hi-score table saving using disk I/O.
+- Hi-score saving using disk I/O.
 - Restoration of the demo recording mode by writing $FF to RAM address $0741 (flag_demo).
 - Extra features/bugfixes due to some PRG-RAM space being freed up by the BIOS routines.
 
