@@ -199,7 +199,8 @@ loadCHRFromDisk:
 		sta loadList
 		lda tmp1
 		sta loadList+1
-        jsr initAPU_status ; reset APU
+        lda #pauseAudio ; pause music
+        sta flag_pause_forAudio
 		
 load:
 		jsr audioUpdate_NMI_disableRendering
@@ -209,6 +210,7 @@ load:
 loadList:
 	.dw $0000 ; dummy value which should be overwritten on the first load
 		bne _error ; Check if there is an error
+        sta flag_pause_forAudio ; A = 0 for no error, so use it to unpause music
 		rts ; exit if no error
 _error:
 		jsr printError      ;If so print the error code to screen
