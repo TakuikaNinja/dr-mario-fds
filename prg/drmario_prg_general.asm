@@ -184,16 +184,109 @@ copy_valueA_fromX00_toY00_plusFF = MemFill
 ;;
 toAddressAtStackPointer_indexA = JumpEngine
 
-;;
-;; CHR-RAM routines
-;;
-;; to be implemented
-;;
-;;             
+; disk access routine
+loadCHRFromDisk:
+		jsr FetchDirectPointer ; fetch load list from stack
+		lda tmp1 ; check if this pointer was already loaded from
+		cmp loadList+1
+		bne +
+		lda tmp0
+		cmp loadList
+		bne +
+		rts ; exit if load list pointer matches
++
+		lda tmp0 ; save load list pointer
+		sta loadList
+		lda tmp1
+		sta loadList+1
+        jsr initAPU_status ; reset APU
+		
+load:
+		jsr audioUpdate_NMI_disableRendering
+        jsr NMI_off
+		jsr LoadFiles ; load CHR files
+	.dw diskID
+loadList:
+	.dw $0000 ; dummy value which should be overwritten on the first load
+		bne _error ; Check if there is an error
+		rts ; exit if no error
+_error:
+		jsr printError      ;If so print the error code to screen
+_sideError:
+		lda FDS_DRIVE_STATUS
+		and #$01
+		beq _sideError     ;Wait until disk is ejected
+_insert:
+		lda FDS_DRIVE_STATUS
+		and #$01
+		bne _insert      ;Wait until disk is inserted
+		beq load
 
+; print the disk error code on screen
+printError:
+		pha ; save error code for later
+		ldy #$10 ; high address
+		lda #$00 ; low address = 0, normal 2bpp, write tiles, no fill
+		ldx #16 ; number of tiles
+		jsr LoadTileset ; load temporary BG tiles into $1000 for the error code
+	.dw tempBGTiles
+		ldy #$1F ; high address
+		lda #$F0 ; low address = F, normal 2bpp, write tiles, no fill
+		ldx #1 ; number of tiles
+		jsr LoadTileset ; load temporary blank tile into $1FF0 to keep the nametable clean
+	.dw tempBlankTile
+		lda #>nametable0
+        jsr initPPU_addrA_hiByte ; clear nametable
+        lda #$21 ; display the error code (rendering is disabled so it's safe to do this right now)
+        sta PPUADDR
+        lda #$EF
+        sta PPUADDR
+        pla ; get error code
+        jsr renderLevelNb_2digits ; write to PPUDATA
+        jsr finishVblank_NMI_on
+        jmp audioUpdate_NMI_enableRendering
+
+; temporary BG tiles for displaying hexadecimal numbers (0~F)
+tempBGTiles:
+	incbin "bin/drmario_chr_05.chr", $0000, $100
+; temporary blank tile to put at $1FF0 to keep the nametable clean
+tempBlankTile:
+	incbin "bin/drmario_chr_05.chr", $0FF0, $10
+
+; this structure is checked when accessing the disk
+diskID:
+	.db 0												; manufacturer
+	.db "VUS "											; game title + space for normal disk
+	.db 1, 0, 0, 0, 0									; game version, side, disk, disk type, unknown
+
+; these are the lists of files to load for each mode
+levelLoadList:
+	.db $C0, $C2, $FF
+
+titleLoadList:
+	.db $C2, $C3, $FF
+
+optionsLoadList:
+	.db $C5, $FF ; single pattern table shared by sprites & background
+
+cutsceneLoadList:
+	.db $C6, $C7, $FF
+
+; faking CHR bankswitching using PPUCTRL pattern table access bits
 changeCHRBank0:
-        rts                      
+		tay
+		lda PPUCTRL_RAM
+		and #%11110111
+		ora ppuctrl_sprite_bits,y
+		sta PPUCTRL_RAM
+		rts
 
+; background pattern table access never changes
 changeCHRBank1:
-        rts                      
-                    
+		rts
+
+; options screen (index 5) uses the same pattern table as the background
+ppuctrl_sprite_bits:
+	.db %00000000, %00000000, %00000000, %00000000
+	.db %00000000, %00001000, %00000000, %00000000
+

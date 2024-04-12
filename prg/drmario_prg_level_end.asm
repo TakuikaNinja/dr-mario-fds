@@ -108,34 +108,13 @@ checkVirusLeft:
         cmp #$02                 
         beq @initField_2P        
         jsr toNextLevel
-    if !optimize      
-        lda #mode_initData_level    ;We can jump to different label that includes both those instructions before exiting               
-        sta mode                 
-        jmp @exit_checkVirusLeft
-    else 
         jmp @switchMode_thenExit
-    endif 
-    @initField_2P:           
-    if !optimize
-        lda #fieldPosEmpty          ;We have a routine that does just this, probably safe to spend a few cycles to save space               
-        ldx #>p1_field                             
-        ldy #>p2_field                 
-        jsr copy_valueA_fromX00_toY00_plusFF 
-        lda #$0F                    ;We also have a routine that does just this              
-        sta p1_status            
-        sta p2_status            
-        lda #statusUpdate_delay                 
-        jsr waitFor_A_frames
-    else 
+    @initField_2P:
         jsr initField_bothPlayers
         jsr fullStatusUpdate
-    endif 
-    @switchMode_thenExit:     
+    @switchMode_thenExit:
         lda #mode_initData_level                 
         sta mode
-    if !optimize                 
-        jmp @exit_checkVirusLeft    ;Definitely not needed
-    endif  
     @exit_checkVirusLeft:    
         rts                      
 

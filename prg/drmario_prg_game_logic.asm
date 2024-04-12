@@ -2267,6 +2267,9 @@ checkPauseReset:
 ;; This routine moves us to the title screen (visual + audio), manages title screen anims, handles nb of players changes, and moves us to demo/options when conditions are met
 ;;
 toTitle:                 
+		jsr loadCHRFromDisk
+	.dw titleLoadList
+		jsr finishVblank_NMI_on
         lda flag_demo           ;Check if we come from demo        
         cmp #flag_demo_playing                 
         bne @switchMusicGraphics         
@@ -2437,11 +2440,9 @@ toDemo_orOptions:
         beq @notInDemo           
         jmp @toInitGame             ;If in demo skip this whole routine  
     @notInDemo:              
-    if !optimize
-        jsr toInitAPU_var_chan      ;Prep audio
-    else 
-        jsr initAPU_variablesAndChannels   
-    endif    
+		jsr loadCHRFromDisk
+	.dw optionsLoadList
+		jsr finishVblank_NMI_on
         lda #CHR_optionsSprites     ;Load visuals                 
         jsr changeCHRBank0              
         lda #CHR_optionsTiles                 
@@ -3319,12 +3320,12 @@ toNextLevel:
     endif 
         beq @prepNextLevel          ;If value is zero, no cutscene     
     @prepCutscene_orEnding:  
+		jsr loadCHRFromDisk
+	.dw cutsceneLoadList
         lda #CHR_cutsceneSprites    ;Load appropriate graphics banks for cutscenes                 
         jsr changeCHRBank0       
         lda #CHR_cutsceneTiles                 
-        jsr changeCHRBank1       
-        jsr audioUpdate_NMI_disableRendering
-        jsr NMI_off          
+        jsr changeCHRBank1               
         ldx currentP_speedSetting   ;Load palette according to speed (is only used to make so that level 20 low has different background)
         lda cutscenePal_basedOnSpeed,X
         sta palToChangeTo     
@@ -3372,29 +3373,17 @@ toNextLevel:
         bne @cutscene_mainLoop   
     @prepNextLevel:          
         lda #$00                    ;Reset cutscene frame in case we were in a cutscene (don't think this is necessary, but a good practice)  
-        sta cutsceneFrame        
-    if !optimize
-        lda #fieldPosEmpty          ;We have a routine that does just this, probably safe to spend a few cycles to save space               
-        ldx #>p1_field                             
-        ldy #>p2_field                 
-        jsr copy_valueA_fromX00_toY00_plusFF
-    else 
+        sta cutsceneFrame
+		jsr loadCHRFromDisk
+	.dw levelLoadList
         jsr initField_bothPlayers
-    endif 
         lda #$01                    ;Set players as "in level" 
         sta flag_inLevel_NMI     
         lda #CHR_levelSprites       ;Switch graphics banks              
         jsr changeCHRBank0       
-    if !optimize
-        lda #CHR_titleTiles_frame0  ;Once again, not sure why the title here                 
+        lda #CHR_levelTiles_frame0               
         jsr changeCHRBank1
-    endif        
-    if bugfix
-        jsr initAPU_variablesAndChannels        ;This fixes the bug where the UFO sfx keeps on playing in the next level if the cutscene is skipped while it is playing
-    endif 
-        jsr audioUpdate_NMI_disableRendering
-        jsr NMI_off           
-        jsr prepLevelVisual_1P   
+        jsr prepLevelVisual_1P
         lda #vu_lvlNb + vu_pScore + vu_hScore + vu_virusLeft + vu_endLvl
         sta visualUpdateFlags    
         jsr finishVblank_NMI_on

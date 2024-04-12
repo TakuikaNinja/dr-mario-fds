@@ -10,8 +10,8 @@ It builds `drmario.fds` using ASM6f (https://github.com/freem/asm6f).
 The differences from the original game are as follows:
 - Boots and runs on FDS, bypassing the BIOS' license message check.
 - Most of the generic subroutines have been replaced with calls to the BIOS routines.
-   - This fixes glitches caused by/related to input polling. (big combo glitch, DMC input corruption)
-- Everything except the title screen has incorrect CHR banks. (no easy way to include all the unique banks)
+   - This addresses input polling corruption caused by DPCM samples in the music.
+- Loading screens have been inserted to load the appropriate CHR data for each screen.
    - Tile animations using CHR bankswitching have been disabled as a result.
 - The anti-piracy/anti-tamper check on the title screen has been disabled.
    - This was unfortunately necessary as code after the title screen data is also checked.

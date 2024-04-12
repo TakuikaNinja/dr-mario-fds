@@ -118,6 +118,7 @@ ppuctrl_nmi_off         = %00000000
 ppuctrl_nmi_on          = %10000000
 ppuctrl_nmi_off_mask    = %01111111
 
+ppumask_disable_all         = %00000000
 ppumask_greyscale           = %00000001
 ppumask_bkg_col1_enable     = %00000010
 ppumask_spr_col1_enable     = %00000100

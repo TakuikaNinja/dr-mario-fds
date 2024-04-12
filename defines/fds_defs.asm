@@ -9,7 +9,8 @@
 	PRG = 0
 	CHR = 1
 	VRAM = 2
-	FILE_COUNT = 4 ; 1 more than actual file count to distract the FDS before NMI kicks in
+	FILE_AMOUNT = 9 ; file amount on disk
+	BOOT_FILE = 2 ; boot file ID
 
 ; FDS hardware defines
 	FDS_IRQ_TIMER_LOW = $4020

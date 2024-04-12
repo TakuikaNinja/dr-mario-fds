@@ -559,20 +559,7 @@ _cutsceneText_interpreter:
         ldx currentP_level       
         dex                             ;Decrease by one because level was increased prior to cutscene 
         lda levelForDisplay,X  
-    if !optimize    
-        and #$F0                        ;Exact replica of the renderLevelNb_2digits helper routine              
-        lsr A                    
-        lsr A                    
-        lsr A                    
-        lsr A                    
-        sta PPUDATA              
-        lda levelForDisplay,X  
-        and #$0F                                        
-        sta PPUDATA              
-        rts 
-    else 
         jmp renderLevelNb_2digits
-    endif 
     @cutscene_txt_singleLetter:
         sta PPUDATA                     ;Current cutsceneText letter is in A, store as is             
         rts 

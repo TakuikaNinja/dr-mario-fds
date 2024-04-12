@@ -147,8 +147,8 @@ init:
         lda #ppuctrl_nmi_on + ppuctrl_bkg_tbl_1              
         sta PPUCTRL_RAM             ;Generate an NMI at the start of the vertical blanking interval + background pattern table address = $1000
         sta PPUCTRL                           
-        lda #ppumask_bkg_col1_enable + ppumask_spr_col1_enable              
-        sta PPUMASK                 ;Show background + sprites in leftmost 8 pixels of screen, disable rendering              
+        lda #ppumask_disable_all     
+        sta PPUMASK                 ;Disable rendering             
     if ver_revA
         sta PPUMASK_RAM
     endif           
@@ -182,7 +182,7 @@ init:
         jsr initField_bothPlayers   ;Clear both players field RAM
         jsr finishVblank_NMI_on
         jsr visualAudioUpdate_NMI   ;Couple of updates (visual + audio), making sure everything is properly initiated
-        jsr audioUpdate_NMI_enableRendering
+        jsr visualAudioUpdate_NMI
         jsr visualAudioUpdate_NMI
     if !removeMoreUnused        
         lda #$0E                 

@@ -4,14 +4,13 @@
 ;; Changes the background, init score/victories and move on to next mode
 ;;
 toLevel:                 
-        jsr audioUpdate_NMI_disableRendering    ;Disable rendering while changing graphics
-        jsr NMI_off          
+		jsr loadCHRFromDisk
+	.dw levelLoadList
+		jsr NMI_off
         lda #CHR_levelSprites                   ;Load level sprites
         jsr changeCHRBank0       
-    if !optimize
-        lda #CHR_titleTiles_frame0              ;Why is the title CHR loaded for a brief moment?                 
+        lda #CHR_levelTiles_frame0                 
         jsr changeCHRBank1       
-    endif 
         lda nbPlayers                           ;Depending on nb of players, prep approriate visual           
         cmp #$01                 
         bne @prepLevelVisual_2P  
