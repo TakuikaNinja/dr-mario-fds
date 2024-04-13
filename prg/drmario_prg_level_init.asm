@@ -3,9 +3,8 @@
 ;;
 ;; Changes the background, init score/victories and move on to next mode
 ;;
-toLevel:                 
-		jsr loadCHRFromDisk
-	.dw levelLoadList
+toLevel:
+        jsr audioUpdate_NMI_disableRendering    ;Disable rendering while changing graphics
 		jsr NMI_off
         lda #CHR_levelSprites                   ;Load level sprites
         jsr changeCHRBank0       

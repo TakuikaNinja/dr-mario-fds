@@ -2635,6 +2635,10 @@ toDemo_orOptions:
         jsr visualAudioUpdate_NMI
         jmp @options_mainLoop       ;Then go back to the beginning of the options main loop
     @toInitGame:             
+    	jsr loadCHRFromDisk
+	.dw levelLoadList
+		jsr finishVblank_NMI_on
+		jsr audioUpdate_NMI_disableRendering
         inc mode                    ;If we start game (or go to demo), increase mode, then exit                 
     @exit_toDemo_orOptions:  
         rts                      
@@ -3370,12 +3374,13 @@ toNextLevel:
         dec waitFrames           
         lda p1_btns_pressed      
         cmp #btn_start                 
-        bne @cutscene_mainLoop   
+        bne @cutscene_mainLoop
     @prepNextLevel:          
         lda #$00                    ;Reset cutscene frame in case we were in a cutscene (don't think this is necessary, but a good practice)  
         sta cutsceneFrame
-		jsr loadCHRFromDisk
+        jsr loadCHRFromDisk
 	.dw levelLoadList
+		jsr finishVblank_NMI_on
         jsr initField_bothPlayers
         lda #$01                    ;Set players as "in level" 
         sta flag_inLevel_NMI     
@@ -3383,7 +3388,12 @@ toNextLevel:
         jsr changeCHRBank0       
         lda #CHR_levelTiles_frame0               
         jsr changeCHRBank1
-        jsr prepLevelVisual_1P
+    if bugfix
+        jsr initAPU_variablesAndChannels        ;This fixes the bug where the UFO sfx keeps on playing in the next level if the cutscene is skipped while it is playing
+    endif 
+        jsr audioUpdate_NMI_disableRendering
+        jsr NMI_off           
+        jsr prepLevelVisual_1P   
         lda #vu_lvlNb + vu_pScore + vu_hScore + vu_virusLeft + vu_endLvl
         sta visualUpdateFlags    
         jsr finishVblank_NMI_on
