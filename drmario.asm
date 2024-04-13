@@ -173,7 +173,7 @@ include header/drmario_header_fds.asm
 	.db $08, $FF
 	.db "-BYPASS-"
 	.dw $0000
-	.dw $C000
+	.dw $1000
 	.db PRG
 
 	.db FileDataBlock
