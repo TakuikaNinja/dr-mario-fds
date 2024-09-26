@@ -144,17 +144,16 @@ include header/drmario_header_fds.asm
 	include prg/drmario_prg_audio_linker.asm
 	
 	if $<$C000
-		org $C000                                   ;Samples cannot be located before $C000
+		pad $C000                                   ;Samples cannot be located before $C000
 	endif
 	align 64                                        ;Must be aligned on a 64-byte boundary (vanilla rom = $FD00)
 	include samples/drmario_samples_dmc.asm
 
 	;Interrupt vectors
-	org NMI_3                                       ;Must be at this specific address             
+	pad NMI_3                                       ;Must be at this specific address             
 	word bypass, reset, irq
 	
-	prg_end:
-	prg_length = prg_end - prg_start
+	prg_length = $ - prg_start
 	.base oldaddr + prg_length
 	
 ; kyodaku file
@@ -177,7 +176,7 @@ include header/drmario_header_fds.asm
 	.db PRG
 
 	.db FileDataBlock
-	; just use the rest of the file as its data
+	.dsb $1000
 	
 	.pad 65500
 
