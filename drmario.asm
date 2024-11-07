@@ -172,11 +172,11 @@ include header/drmario_header_fds.asm
 	.db $08, $FF
 	.db "-BYPASS-"
 	.dw $0000
-	.dw $1000
+	.dw $0400
 	.db PRG
 
 	.db FileDataBlock
-	.dsb $1000
+	.dsb $0400
 	
 	.pad 65500
 
